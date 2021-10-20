@@ -1,9 +1,13 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
+import 'package:flutter/widgets.dart';
 import 'dart:core';
 import 'controllers/restapi.dart' as restapi;
 import 'dart:developer';
+import 'movie_info.dart';
 
 void main() {
   runApp(const MainMenu());
@@ -43,8 +47,8 @@ class _BodyState extends State<Body> {
     return SafeArea(
       child: Column(
         children: [
-          NowPlayingWidget(),
-          PopularsWidget()
+          Expanded(child: NowPlayingWidget()),
+          Expanded(child:PopularsWidget())
         ],
       ),
     );
@@ -62,10 +66,11 @@ class NowPlayingWidget extends StatefulWidget {
 class _NowPlayingWidgetState extends State<NowPlayingWidget> {
   @override
 
-
+  String urlImage = new restapi.RestAPI().get_urlBaseImage();
 
   Widget build(BuildContext context) {
     return Container(
+        height: MediaQuery.of(context).size.height * 0.55,
       child: FutureBuilder(
         future:  new restapi.RestAPI().get_now_playing(),
         builder:(context, snapshot) {
@@ -73,7 +78,7 @@ class _NowPlayingWidgetState extends State<NowPlayingWidget> {
             var dd = json.decode(snapshot.data.toString());
 
             return Container(
-                padding: EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 0.0),
+                padding: EdgeInsets.fromLTRB(10.0, 10.0, 0.0, 5.0),
               child: Column(
                 children: [
 
@@ -92,15 +97,72 @@ class _NowPlayingWidgetState extends State<NowPlayingWidget> {
                   SizedBox(
                     height: 18.0,
                   ),
-                  Container(
-                    height: 280.0,
+                  Expanded(
                     child: ListView.builder(
                         itemCount: dd['results'].length,
+
                         itemBuilder: (BuildContext ctx, int idx){
-                          return Card(
-                            child: Padding(
-                              padding: EdgeInsets.all(5.0),
-                              child: Text(dd['results'][idx]['title']),
+
+                          return GestureDetector(
+                            onTap: (){
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => Movie_Info(id_movie: dd['results'][idx]['id']))
+                              );
+                            },
+                            child: SizedBox(
+                              height: 100,
+                              width: double.infinity,
+                              child: Card(
+                                child: Padding(
+                                  padding: EdgeInsets.all(5.0),
+                                  child: Row(
+                                    children: [
+                                  CircleAvatar(
+                                    radius: 50.0,
+                                    child: Image.network(
+                                    urlImage +dd['results'][idx]['backdrop_path'],
+
+                                      fit: BoxFit.cover,
+                                      height: 120,
+                                      width: 100,
+
+                                      loadingBuilder: (ctx, child, loadingProgress) {
+                                        if (loadingProgress == null) return child;
+                                        return Center(
+                                          child: CircularProgressIndicator(
+                                            value: loadingProgress.expectedTotalBytes != null ?
+                                            loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                                : null,
+                                          ),
+                                        );
+                                      },
+                                      errorBuilder: (ctx, error, stackTrace){
+                                        return Text("Error while loading");
+                                      },
+                                    ),
+                                  ),
+                                  SizedBox(width: 20.0,),
+                                      Expanded(
+                                        child: Text(dd['results'][idx]['title'],
+                                          style: TextStyle(
+                                            fontSize: 14.0,
+                                            fontWeight: FontWeight.bold,
+                                            shadows: <Shadow>[
+                                              Shadow(
+                                                offset: Offset(0.0, 1.0),
+                                                blurRadius: 30.0,
+                                                color: Colors.white,
+                                              )
+                                            ],
+                                            letterSpacing: 1.0,
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
                             ),
                           );
                         }
@@ -108,8 +170,6 @@ class _NowPlayingWidgetState extends State<NowPlayingWidget> {
                   ),
                 ],
               )
-
-
             );
 
           }else{
@@ -117,7 +177,7 @@ class _NowPlayingWidgetState extends State<NowPlayingWidget> {
               child: Column(
                 children: [
                   Container(
-                    padding: EdgeInsets.fromLTRB(0.0,80.0,0.0, 15.0),
+                    padding: EdgeInsets.fromLTRB(0.0,0.0,0.0, 15.0),
                     child: CircularProgressIndicator(
                       color: Colors.red,
                     ),
@@ -153,6 +213,8 @@ class _PopularsWidgetState extends State<PopularsWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
+        height: MediaQuery.of(context).size.height * 0.33,
+        padding: EdgeInsets.symmetric(vertical: 0.0, horizontal: 0.0),
         child: FutureBuilder(
           future:  new restapi.RestAPI().get_now_playing(),
           builder:(context, snapshot) {
@@ -160,63 +222,82 @@ class _PopularsWidgetState extends State<PopularsWidget> {
               var dd = json.decode(snapshot.data.toString());
 
               return Container(
-                  padding: EdgeInsets.fromLTRB(10.0, 30.0, 10.0, 0.0),
+                  padding: EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
                   child: Column(
                     children: [
 
                       Align(
                         alignment: Alignment.centerLeft,
-
                         child:
+
                         Text("Populares",
                           textAlign: TextAlign.left,
+
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16.0,
                           ),),
                       ),
-                      SizedBox(
-                        height: 15.0,
-                      ),
-                      Container(
-                        height: 200.0,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
+                      SizedBox(height: 10.0,),
+                      Expanded(
+                          child:ListView.builder(
+                            scrollDirection: Axis.horizontal,
                             itemCount: dd['results'].length,
-                            itemBuilder: (BuildContext ctx, int idx){
-                              return Container(
-                                height: double.infinity,
-                                width: 125,
-
-                                padding: EdgeInsets.symmetric(vertical: 0.0, horizontal:8.0),
-                                child: Column(
-                                  children: [
-                                    Card(
-
-                                    shadowColor: Colors.white,
-                                      child: Padding(
+                            itemBuilder: (BuildContext ctx, int idx) {
+                                return SizedBox(
+                                  width: 120,
+                                  child: Column(
+                                    children: [
+                                      Card(
+                                        shadowColor: Colors.white,
+                                        child: Padding(
                                         padding: EdgeInsets.all(1.0),
-                                        child: Image.network(urlImage + dd['results'][idx]['poster_path']),
+                                        child:Image.network(
+                                          urlImage +dd['results'][idx]['poster_path'],
+                                          fit: BoxFit.cover,
+                                          height: 180,
+                                          width: 120,
+
+                                          loadingBuilder: (ctx, child, loadingProgress) {
+                                            if (loadingProgress == null) return child;
+                                            return Center(
+                                              child: CircularProgressIndicator(
+                                                value: loadingProgress.expectedTotalBytes != null ?
+                                                       loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                                       : null,
+                                              ),
+                                            );
+                                        },
+                                          errorBuilder: (ctx, error, stackTrace){
+                                            return Text("Error while loading");
+                                          },
+                                        ),
+
+                                      )
                                       ),
-                                    ),
-                                    Text(dd['results'][idx]['title'],
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                    fontWeight: FontWeight.w400,
-                                      fontSize: 11.0
+                                      Flexible(
 
-                                    ),),
-                                  ],
-                                ),
-                              );
-                            }
-                        ),
-                      ),
-                    ],
+                                          child: Text(
+                                            dd['results'][idx]['title'],
+                                            textAlign: TextAlign.center,
+
+                                            style: TextStyle(
+                                              fontSize: 11.0,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          )
+                                      )
+                                    ],
+                                  ),
+                                );}
+                          )
+                      )
+                    ]
                   )
-
-
               );
+
+
+
 
             }else{
               return Center(
