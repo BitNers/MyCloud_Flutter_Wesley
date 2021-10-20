@@ -1,5 +1,6 @@
-import 'package:http/http.dart' as http;
 import 'dart:core';
+
+import 'package:http/http.dart' as http;
 
 class RestAPI {
   String _language = "";
@@ -23,7 +24,9 @@ class RestAPI {
       "get_movie_details":
           "/movie/%d?api_key=${this._api_key}&language=${this._language}",
       "get_movie_images":
-          "/movie/%d/images?api_key=${this._api_key}&language=${this._language}"
+          "/movie/%d/images?api_key=${this._api_key}&language=${this._language}",
+      "get_actors_by_movie_id":
+          "/movie/%d/credits?api_key=${this._api_key}&language=pt-BR"
     };
   }
 
@@ -31,8 +34,24 @@ class RestAPI {
     return this._urlBaseImage;
   }
 
-  Future<String> get_movie_info_by_id(int id) async{
-    var url = Uri.parse("${this._urlBase}${this._endpoints['get_movie_details']}".replaceAll("%d", id.toString()));
+  Future<String> get_actors_by_movie_id(int id) async {
+    var url = Uri.parse(
+        "${this._urlBase}${this._endpoints['get_actors_by_movie_id']}"
+            .replaceAll("%d", id.toString()));
+
+    final httpResponse = await http.get(url);
+
+    if (httpResponse.statusCode == 200) {
+      return httpResponse.body;
+    } else {
+      return "<Erro>";
+    }
+  }
+
+  Future<String> get_movie_info_by_id(int id) async {
+    var url = Uri.parse(
+        "${this._urlBase}${this._endpoints['get_movie_details']}"
+            .replaceAll("%d", id.toString()));
 
     final httpResponse = await http.get(url);
 
