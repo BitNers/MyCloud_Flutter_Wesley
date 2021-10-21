@@ -182,6 +182,7 @@ class _NowPlayingWidgetState extends State<NowPlayingWidget> {
           }else{
             return Center(
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
                     padding: EdgeInsets.fromLTRB(0.0,0.0,0.0, 15.0),

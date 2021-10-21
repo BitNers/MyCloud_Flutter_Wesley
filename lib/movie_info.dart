@@ -4,9 +4,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
-import 'package:url_launcher/url_launcher.dart';
-
-
 import 'controllers/restapi.dart' as restapi;
 
 class Movie_Info extends StatelessWidget {
@@ -38,32 +35,21 @@ class Movie_Info extends StatelessWidget {
                         .get_movie_info_by_id(this.id_movie),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
+
                         var dd = json.decode(snapshot.data.toString());
+
                         return Column(
                           children: [
                             ClipRRect(
                               borderRadius: BorderRadius.circular(5.0),
-                              child: Image.network(
-                                urlImage + dd['backdrop_path'],
+                              child: CachedNetworkImage(
+                                imageUrl: urlImage + dd['backdrop_path'].toString(),
+                                placeholder: (ctx, url) => Container(child: CircularProgressIndicator()),
+                                errorWidget: (ctx, url, error) => ImageIcon(AssetImage("images/not_found.png")),
+
+                                height: 300,
+                                width: double.infinity,
                                 fit: BoxFit.cover,
-                                loadingBuilder: (ctx, child, loadingProgress) {
-                                  if (loadingProgress == null) return child;
-                                  return Center(
-                                    child: CircularProgressIndicator(
-                                      value:
-                                          loadingProgress.expectedTotalBytes !=
-                                                  null
-                                              ? loadingProgress
-                                                      .cumulativeBytesLoaded /
-                                                  loadingProgress
-                                                      .expectedTotalBytes!
-                                              : null,
-                                    ),
-                                  );
-                                },
-                                errorBuilder: (ctx, error, stackTrace) {
-                                  return Text("Error while loading");
-                                },
                               ),
                             ),
                             Container(
@@ -107,7 +93,7 @@ class Movie_Info extends StatelessWidget {
                                                 MaterialStateProperty.all<
                                                     Color>(Colors.blue),
                                           ),
-                                          onPressed: ()=> new restapi.RestAPI().launchURLBrowser("https://google.com.br/search?q=${dd['title']}"),
+                                          onPressed: ()=> new restapi.RestAPI().launchURLBrowser("https://google.com.br/search?q=${dd['title']}%20filme"),
                                         )),
                                       )
                                     ],
@@ -239,33 +225,24 @@ class Movie_Info extends StatelessWidget {
                           ],
                         );
                       } else {
-                        return Column(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Center(
-                              child: Column(
-                                children: [
-                                  Container(
-                                    padding: EdgeInsets.fromLTRB(
-                                        0.0, 0.0, 0.0, 15.0),
-                                    child: CircularProgressIndicator(
-                                      color: Colors.red,
-                                    ),
-                                  ),
-                                  Text(
-                                    "Loading info about the movie...",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w300,
-                                      fontSize: 18.0,
-                                      letterSpacing: 2.0,
-                                    ),
-                                  ),
-                                ],
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                padding: EdgeInsets.fromLTRB(0.0,0.0,0.0, 15.0),
+                                child: CircularProgressIndicator(
+                                  color: Colors.red,
+                                ),
                               ),
-                            ),
-                          ],
+                              Text("Loading now playing movies...",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w300,
+                                  fontSize: 18.0,
+                                  letterSpacing: 2.0,
+                                ),),
+                            ],
+                          ),
                         );
                       }
                     })
