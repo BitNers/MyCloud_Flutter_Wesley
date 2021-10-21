@@ -1,6 +1,7 @@
 import 'dart:core';
 
 import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 
 class RestAPI {
   String _language = "";
@@ -33,6 +34,11 @@ class RestAPI {
   String get_urlBaseImage() {
     return this._urlBaseImage;
   }
+
+  void launchURLBrowser(String url) {
+    launch(url);
+  }
+
 
   Future<String> get_actors_by_movie_id(int id) async {
     var url = Uri.parse(

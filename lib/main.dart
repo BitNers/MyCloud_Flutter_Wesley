@@ -6,8 +6,8 @@ import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'dart:core';
 import 'controllers/restapi.dart' as restapi;
-import 'dart:developer';
 import 'movie_info.dart';
+import 'search_movies.dart';
 
 void main() {
   runApp(const MainMenu());
@@ -18,17 +18,24 @@ class MainMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return MaterialApp(
       theme: ThemeData.dark(),
-      home: Scaffold(
-
-        appBar: AppBar(
-          backgroundColor: Colors.blue,
-
+      routes: <String, WidgetBuilder>{
+        '/tela_pesquisa': (BuildContext context) => Search_Movies()
+      },
+      home: Builder(
+        builder: (context)=> Scaffold(
+            appBar: AppBar(
+              backgroundColor: Colors.blue,
+            ),
+            body: Body(),
+            floatingActionButton: FloatingActionButton.small(
+                child: const Icon(Icons.search),
+                onPressed: () => Navigator.of(context).pushNamed('/tela_pesquisa')
+            )
         ),
-          body: Body()
-
-        )
+      )
       );
   }
 }
@@ -244,50 +251,57 @@ class _PopularsWidgetState extends State<PopularsWidget> {
                             scrollDirection: Axis.horizontal,
                             itemCount: dd['results'].length,
                             itemBuilder: (BuildContext ctx, int idx) {
-                                return SizedBox(
-                                  width: 120,
-                                  child: Column(
-                                    children: [
-                                      Card(
-                                        shadowColor: Colors.white,
-                                        child: Padding(
-                                        padding: EdgeInsets.all(1.0),
-                                        child:Image.network(
-                                          urlImage +dd['results'][idx]['poster_path'],
-                                          fit: BoxFit.cover,
-                                          height: 180,
-                                          width: 120,
-
-                                          loadingBuilder: (ctx, child, loadingProgress) {
-                                            if (loadingProgress == null) return child;
-                                            return Center(
-                                              child: CircularProgressIndicator(
-                                                value: loadingProgress.expectedTotalBytes != null ?
-                                                       loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                                                       : null,
-                                              ),
-                                            );
-                                        },
-                                          errorBuilder: (ctx, error, stackTrace){
-                                            return Text("Error while loading");
+                                return GestureDetector(
+                                  onTap: (){
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (context) => Movie_Info(id_movie: dd['results'][idx]['id']))
+                                    );
+                                  },
+                                  child: SizedBox(
+                                    width: 130,
+                                    child: Column(
+                                      children: [
+                                        Card(
+                                          shadowColor: Colors.white,
+                                          child: Padding(
+                                          padding: EdgeInsets.all(1.0),
+                                          child:Image.network(
+                                            urlImage +dd['results'][idx]['poster_path'],
+                                            fit: BoxFit.cover,
+                                            height: 180,
+                                            width: 120,
+                                            loadingBuilder: (ctx, child, loadingProgress) {
+                                              if (loadingProgress == null) return child;
+                                              return Center(
+                                                child: CircularProgressIndicator(
+                                                  value: loadingProgress.expectedTotalBytes != null ?
+                                                         loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                                         : null,
+                                                ),
+                                              );
                                           },
+                                            errorBuilder: (ctx, error, stackTrace){
+                                              return Text("Error while loading");
+                                            },
+                                          ),
+
+                                        )
                                         ),
+                                        Flexible(
 
-                                      )
-                                      ),
-                                      Flexible(
+                                            child: Text(
+                                              dd['results'][idx]['title'],
+                                              textAlign: TextAlign.center,
 
-                                          child: Text(
-                                            dd['results'][idx]['title'],
-                                            textAlign: TextAlign.center,
-
-                                            style: TextStyle(
-                                              fontSize: 11.0,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          )
-                                      )
-                                    ],
+                                              style: TextStyle(
+                                                fontSize: 11.0,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            )
+                                        )
+                                      ],
+                                    ),
                                   ),
                                 );}
                           )
@@ -325,5 +339,7 @@ class _PopularsWidgetState extends State<PopularsWidget> {
     );
   }
 }
+
+
 
 
