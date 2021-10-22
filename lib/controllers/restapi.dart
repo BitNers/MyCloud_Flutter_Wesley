@@ -13,9 +13,9 @@ class RestAPI {
   RestAPI() {
     this._urlBase = "https://api.themoviedb.org/3";
     this._urlBaseImage = "https://image.tmdb.org/t/p/w500/";
-    this._api_key = "f02f27dcc375a0f273bfc120a646e037";
+    this._api_key =
+        "f02f27dcc375a0f273bfc120a646e037"; // Isto devia estar em um dotenv da vida.
     this._language = "pt-BR";
-    // this._parameters = "?api_key=${this._api_key}&language=${this._language}";
 
     this._endpoints = {
       "popular":
@@ -42,21 +42,19 @@ class RestAPI {
   }
 
   Future<String> get_movie_by_name(String nome) async {
-
     var url = Uri.parse(
         "${this._urlBase}${this._endpoints['get_movie_by_keyword']}"
             .replaceAll("%s", nome));
 
     final httpResponse = await http.get(url);
 
-
     if (httpResponse.statusCode == 200) {
       return httpResponse.body;
-    } else if (httpResponse.statusCode >= 400){
+    } else if (httpResponse.statusCode >= 400) {
       return "ErroCliente";
-    }else if(httpResponse.statusCode >= 500){
+    } else if (httpResponse.statusCode >= 500) {
       return "ErroServidor";
-    }else{
+    } else {
       return "Erro";
     }
   }
@@ -70,11 +68,11 @@ class RestAPI {
 
     if (httpResponse.statusCode == 200) {
       return httpResponse.body;
-    } else if (httpResponse.statusCode >= 400){
+    } else if (httpResponse.statusCode >= 400) {
       return "ErroCliente";
-    }else if(httpResponse.statusCode >= 500){
+    } else if (httpResponse.statusCode >= 500) {
       return "ErroServidor";
-    }else{
+    } else {
       return "Erro";
     }
   }
@@ -88,11 +86,11 @@ class RestAPI {
 
     if (httpResponse.statusCode == 200) {
       return httpResponse.body;
-    } else if (httpResponse.statusCode >= 400){
+    } else if (httpResponse.statusCode >= 400) {
       return "ErroCliente";
-    }else if(httpResponse.statusCode >= 500){
+    } else if (httpResponse.statusCode >= 500) {
       return "ErroServidor";
-    }else{
+    } else {
       return "Erro";
     }
   }
@@ -103,11 +101,11 @@ class RestAPI {
 
     if (httpResponse.statusCode == 200) {
       return httpResponse.body;
-    } else if (httpResponse.statusCode >= 400){
+    } else if (httpResponse.statusCode >= 400) {
       return "ErroCliente";
-    }else if(httpResponse.statusCode >= 500){
+    } else if (httpResponse.statusCode >= 500) {
       return "ErroServidor";
-    }else{
+    } else {
       return "Erro";
     }
   }
@@ -118,11 +116,11 @@ class RestAPI {
 
     if (httpResponse.statusCode == 200) {
       return httpResponse.body;
-    } else if (httpResponse.statusCode >= 400){
+    } else if (httpResponse.statusCode >= 400) {
       return "ErroCliente";
-    }else if(httpResponse.statusCode >= 500){
+    } else if (httpResponse.statusCode >= 500) {
       return "ErroServidor";
-    }else{
+    } else {
       return "Erro";
     }
   }

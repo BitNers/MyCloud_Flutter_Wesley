@@ -4,13 +4,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
+
 import 'controllers/restapi.dart' as restapi;
 
 class Movie_Info extends StatelessWidget {
   final int id_movie;
 
   const Movie_Info({Key? key, required this.id_movie}) : super(key: key);
-
 
   @override
   Widget build(BuildContext context) {
@@ -35,18 +35,23 @@ class Movie_Info extends StatelessWidget {
                         .get_movie_info_by_id(this.id_movie),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
-
                         var dd = json.decode(snapshot.data.toString());
+
+                        if (dd['overview'].toString().isEmpty) {
+                          dd['overview'] = "Nenhuma sinopse encontrada.";
+                        }
 
                         return Column(
                           children: [
                             ClipRRect(
                               borderRadius: BorderRadius.circular(5.0),
                               child: CachedNetworkImage(
-                                imageUrl: urlImage + dd['backdrop_path'].toString(),
-                                placeholder: (ctx, url) => Container(child: CircularProgressIndicator()),
-                                errorWidget: (ctx, url, error) => ImageIcon(AssetImage("images/not_found.png")),
-
+                                imageUrl:
+                                    urlImage + dd['backdrop_path'].toString(),
+                                placeholder: (ctx, url) => Container(
+                                    child: CircularProgressIndicator()),
+                                errorWidget: (ctx, url, error) => ImageIcon(
+                                    AssetImage("images/not_found.png")),
                                 height: 300,
                                 width: double.infinity,
                                 fit: BoxFit.cover,
@@ -93,7 +98,9 @@ class Movie_Info extends StatelessWidget {
                                                 MaterialStateProperty.all<
                                                     Color>(Colors.blue),
                                           ),
-                                          onPressed: ()=> new restapi.RestAPI().launchURLBrowser("https://google.com.br/search?q=${dd['title']}%20filme"),
+                                          onPressed: () => new restapi.RestAPI()
+                                              .launchURLBrowser(
+                                                  "https://google.com.br/search?q=${dd['title']}%20filme"),
                                         )),
                                       )
                                     ],
@@ -130,17 +137,20 @@ class Movie_Info extends StatelessWidget {
                                       return SizedBox(
                                         child: Column(
                                           children: [
-
                                             Align(
                                               alignment: Alignment.centerLeft,
-
                                               child: Padding(
-                                                padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 10.0),
-                                                child: Text("Atores & Elenco", textAlign: TextAlign.left,
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 18.0,
-                                                )),
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 0.0,
+                                                        horizontal: 10.0),
+                                                child: Text("Atores & Elenco",
+                                                    textAlign: TextAlign.left,
+                                                    style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 18.0,
+                                                    )),
                                               ),
                                             ),
                                             SizedBox(
@@ -148,45 +158,88 @@ class Movie_Info extends StatelessWidget {
                                             ),
                                             Expanded(
                                                 child: ListView.builder(
-                                                    scrollDirection: Axis.horizontal,
-                                                    itemCount: dd['cast'].length,
+                                                    scrollDirection:
+                                                        Axis.horizontal,
+                                                    itemCount:
+                                                        dd['cast'].length,
                                                     itemBuilder:
-                                                        (BuildContext ctx, int idx) {
-                                                          return Card(
-
-                                                            child: Padding(
-                                                              padding: const EdgeInsets.all(2.0),
-                                                              child: Column(
-                                                                mainAxisAlignment: MainAxisAlignment.start,
-                                                                children: [
-
-                                                                  CachedNetworkImage(
-                                                                    imageUrl: urlImage + dd['cast'][idx]['profile_path'].toString(),
-                                                                    placeholder: (ctx, url) => Container(child: CircularProgressIndicator()),
-                                                                    errorWidget: (ctx, url, error) => ImageIcon(AssetImage("images/nan_actor.png")),
-                                                                    height: 190,
-                                                                    width: 120,
-                                                                    fit: BoxFit.cover,
-                                                                  ),
-                                                                  Column(
-                                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                    children: [
-                                                                      Text(dd['cast'][idx]['original_name'], textAlign: TextAlign.center,),
-                                                                      Text("COMO", textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.w200)),
-                                                                      Text(dd['cast'][idx]['character'], textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold))
-                                                                    ],
-                                                                  )
-                                                                ],
+                                                        (BuildContext ctx,
+                                                            int idx) {
+                                                      return Card(
+                                                        child: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(2.0),
+                                                          child: Column(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              CachedNetworkImage(
+                                                                imageUrl: urlImage +
+                                                                    dd['cast'][idx]
+                                                                            [
+                                                                            'profile_path']
+                                                                        .toString(),
+                                                                placeholder: (ctx,
+                                                                        url) =>
+                                                                    Container(
+                                                                        child:
+                                                                            CircularProgressIndicator()),
+                                                                errorWidget: (ctx,
+                                                                        url,
+                                                                        error) =>
+                                                                    ImageIcon(
+                                                                        AssetImage(
+                                                                            "images/nan_actor.png")),
+                                                                height: 190,
+                                                                width: 120,
+                                                                fit: BoxFit
+                                                                    .cover,
                                                               ),
-                                                            ),
-                                                          );
-                                                        }
-                                                    )
-                                                      ),
+                                                              Column(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .spaceBetween,
+                                                                children: [
+                                                                  Text(
+                                                                    dd['cast'][
+                                                                            idx]
+                                                                        [
+                                                                        'original_name'],
+                                                                    textAlign:
+                                                                        TextAlign
+                                                                            .center,
+                                                                  ),
+                                                                  Text("COMO",
+                                                                      textAlign:
+                                                                          TextAlign
+                                                                              .center,
+                                                                      style: TextStyle(
+                                                                          fontWeight:
+                                                                              FontWeight.w200)),
+                                                                  Text(
+                                                                      dd['cast']
+                                                                              [
+                                                                              idx]
+                                                                          [
+                                                                          'character'],
+                                                                      textAlign:
+                                                                          TextAlign
+                                                                              .center,
+                                                                      style: TextStyle(
+                                                                          fontWeight:
+                                                                              FontWeight.bold))
+                                                                ],
+                                                              )
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      );
+                                                    })),
                                           ],
                                         ),
                                       );
-
                                     } else {
                                       return Column(
                                         mainAxisSize: MainAxisSize.max,
@@ -230,17 +283,20 @@ class Movie_Info extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Container(
-                                padding: EdgeInsets.fromLTRB(0.0,0.0,0.0, 15.0),
+                                padding:
+                                    EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 15.0),
                                 child: CircularProgressIndicator(
                                   color: Colors.red,
                                 ),
                               ),
-                              Text("Loading now playing movies...",
+                              Text(
+                                "Loading now movie info...",
                                 style: TextStyle(
                                   fontWeight: FontWeight.w300,
                                   fontSize: 18.0,
                                   letterSpacing: 2.0,
-                                ),),
+                                ),
+                              ),
                             ],
                           ),
                         );
@@ -252,7 +308,5 @@ class Movie_Info extends StatelessWidget {
         ),
       ),
     );
-
   }
-
 }
